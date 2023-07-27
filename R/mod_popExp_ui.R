@@ -104,7 +104,20 @@ mod_popExp_ui <- function(id, label = "Population Explorer") {
         div(
           id = "pop_cic_plot",
           wellPanel(
-            plotOutput(ns("plot_output"), height = 700),
+            conditionalPanel( # plot
+              "input.plot_type === 'Box Plot' || 
+              input.plot_type === 'Kaplan-Meier Curve' ||
+              input.plot_type === 'Line plot - mean over time' ||
+              input.plot_type === 'Heatmap - endpoint correlations'",
+              ns = ns,
+              plotOutput(ns("plot_output"), height = 700)
+            ),
+            conditionalPanel( # plotly
+              "input.plot_type === 'Spaghetti Plot' || 
+              input.plot_type === 'Scatter Plot'",
+              ns = ns, 
+              plotlyOutput(ns("plotly_output"), height = 700)
+            ),
             uiOutput(outputId = ns("downloadControls")),
             fluidRow(
               column(
@@ -144,3 +157,5 @@ mod_popExp_ui <- function(id, label = "Population Explorer") {
     )
   )
 }
+
+

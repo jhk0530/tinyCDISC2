@@ -267,29 +267,60 @@ mod_popExp_server <- function(input, output, session, datafile) {
   p_km <- callModule(km_srv, "km", data = km_data, run = run_kapm)
 
   # use plot output of the module to create the plot
-  output$plot_output <- renderPlot({
-    switch(input$plot_type,
-      `Scatter Plot` = p_scatter(),
-      `Box Plot` = p_box(),
-      `Spaghetti Plot` = p_spaghetti(),
-      `Line plot - mean over time` = p_line$plot(), 
-      `Heatmap - endpoint correlations` = p_heatmap$plot(),
-      `Kaplan-Meier Curve` = p_km() 
-    ) %>%
-      config(
-        displaylogo = FALSE,
-        modeBarButtonsToRemove =
-          c(
-            "zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
-            "hoverClosestCartesian", "hoverCompareCartesian", "zoom3d", "pan3d",
-            "resetCameraDefault3d", "resetCameraLastSave3d", "hoverClosest3d",
-            "orbitRotation", "tableRotation", "zoomInGeo", "zoomOutGeo",
-            "resetGeo", "hoverClosestGeo", "sendDataToCloud", "hoverClosestGl2d",
-            "hoverClosestPie", "toggleHover", "resetViews", "toggleSpikelines", "resetViewMapbox"
-            # , 'toImage', 'resetScale2d', 'zoomIn2d', 'zoomOut2d','zoom2d', 'pan2d'
+
+  # Plot
+  observeEvent(input$plot_type, {
+    if (input$plot_type %in%
+      c(
+        "Box Plot", "Line plot - mean over time",
+        "Heatmap - endpoint correlations", "Kaplan-Meier Curve"
+      )) {
+      output$plot_output <- renderPlot({
+        switch(input$plot_type,
+          `Box Plot` = p_box(),
+          `Line plot - mean over time` = p_line$plot(),
+          `Heatmap - endpoint correlations` = p_heatmap$plot(),
+          `Kaplan-Meier Curve` = p_km()
+        ) %>%
+          config(
+            displaylogo = FALSE,
+            modeBarButtonsToRemove =
+              c(
+                "zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
+                "hoverClosestCartesian", "hoverCompareCartesian", "zoom3d", "pan3d",
+                "resetCameraDefault3d", "resetCameraLastSave3d", "hoverClosest3d",
+                "orbitRotation", "tableRotation", "zoomInGeo", "zoomOutGeo",
+                "resetGeo", "hoverClosestGeo", "sendDataToCloud", "hoverClosestGl2d",
+                "hoverClosestPie", "toggleHover", "resetViews", "toggleSpikelines", "resetViewMapbox"
+                # , 'toImage', 'resetScale2d', 'zoomIn2d', 'zoomOut2d','zoom2d', 'pan2d'
+              )
           )
-      )
+      })
+    } else { # Plotly
+      output$plotly_output <- renderPlotly({
+        switch(input$plot_type,
+          `Scatter Plot` = p_scatter() %>% plotly::ggplotly() %>%
+            plotly::layout(title = list(yref = "container", y = .95, yanchor = "bottom")),
+          `Spaghetti Plot` = p_spaghetti() %>% plotly::ggplotly()
+        ) %>%
+          config(
+            displaylogo = FALSE,
+            modeBarButtonsToRemove =
+              c(
+                "zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
+                "hoverClosestCartesian", "hoverCompareCartesian", "zoom3d", "pan3d",
+                "resetCameraDefault3d", "resetCameraLastSave3d", "hoverClosest3d",
+                "orbitRotation", "tableRotation", "zoomInGeo", "zoomOutGeo",
+                "resetGeo", "hoverClosestGeo", "sendDataToCloud", "hoverClosestGl2d",
+                "hoverClosestPie", "toggleHover", "resetViews", "toggleSpikelines", "resetViewMapbox"
+                # , 'toImage', 'resetScale2d', 'zoomIn2d', 'zoomOut2d','zoom2d', 'pan2d'
+              )
+          )
+      })
+    }
   })
+
+
 
   # Output text string of what was filtered in IDEAFilter widget/ module
   output$applied_filters <- renderUI({
@@ -367,10 +398,10 @@ mod_popExp_server <- function(input, output, session, datafile) {
           }
 
           plotobj <- switch(input$plot_type,
-            `Scatter Plot` = p_scatter(), 
-            `Box Plot` = p_box(), 
-            `Spaghetti Plot` = p_spaghetti(), 
-            `Line plot - mean over time` = p_line$plot(), 
+            `Scatter Plot` = p_scatter(),
+            `Box Plot` = p_box(),
+            `Spaghetti Plot` = p_spaghetti(),
+            `Line plot - mean over time` = p_line$plot(),
             `Heatmap - endpoint correlations` = p_heatmap$plot(),
             `Kaplan-Meier Curve` = p_km()
           ) %>%
@@ -387,7 +418,7 @@ mod_popExp_server <- function(input, output, session, datafile) {
                   # , 'toImage', 'resetScale2d', 'zoomIn2d', 'zoomOut2d','zoom2d', 'pan2d'
                 )
             )
-          
+
           # pptx export
           if (input$file_ext == "pptx") {
             my_vec_graph <- rvg::dml(ggobj = plotobj)
