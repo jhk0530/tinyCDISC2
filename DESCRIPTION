@@ -1,6 +1,6 @@
 Package: openCDISC
 Title: Quick Table Generation & Exploratory Analyses on ADaM-Ish Datasets
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: person("Jinhwan", "Kim", , "hwanistic@gmail.com", role = c("aut", "cre"))
 Description: Provides users a quick exploratory dive into common
     visualizations without writing a single line of code given the users
@@ -23,8 +23,8 @@ Description: Provides users a quick exploratory dive into common
     modules allow for concise filtering & downloading bulk outputs into
     html or pdf formats to save for later.
 License: AGPL (>= 3)
-URL: https://github.com/Biogen-Inc/tidyCDISC/, https://Biogen-Inc.github.io/tidyCDISC/
-BugReports: https://github.com/Biogen-Inc/tidyCDISC/issues
+URL: https://github.com/jhk0530/tinyCDISC2
+BugReports: https://github.com/jhk0530/tinyCDISC2/issues
 Depends: 
     R (>= 2.10)
 Imports: 
@@ -61,6 +61,5 @@ Suggests:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-Language: en-US
 LazyData: true
 RoxygenNote: 7.2.3
