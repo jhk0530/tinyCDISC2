@@ -19,7 +19,9 @@ spaghettiPlot_ui <- function(id, label = "spaghetti") {
   wellPanel(
     selectInput(ns("yvar"), "Select y-axis", choices = NULL),
     fluidRow(column(12, align = "center", uiOutput(ns("include_var")))),
-    selectInput(ns("time"), "Time Variable", choices = NULL)
+    selectInput(ns("time"), "Time Variable", choices = NULL),
+    selectInput(ns('color'), "Group by", choices = NULL),
+    selectInput(ns('facet'), "Split chart", choices = NULL)
     )
   )
 }
@@ -66,8 +68,21 @@ spaghettiPlot_srv <- function(input, output, session, data, run) {
     
     updateSelectInput(
       session, "yvar",
-                      choices = list(`Time Dependent` = paramcd,`Time Independent` = num_col),
-                      selected = isolate(input$yvar))
+      choices = list(`Time Dependent` = paramcd, `Time Independent` = num_col),
+      selected = isolate(input$yvar)
+    )
+    
+    updateSelectInput(
+      session, "color",
+      choices = list(`Time Dependent` = paramcd, `Time Independent` = num_col),
+      selected = character(0)
+    )
+    
+    updateSelectInput(
+      session, "facet",
+      choices = list(`Time Dependent` = paramcd, `Time Independent` = num_col),
+      selected = character(0)
+    )
     
     # Update time variable based on yvar selection
     if(input$yvar != "" & !(input$yvar %in% colnames(data()))){
@@ -100,7 +115,7 @@ spaghettiPlot_srv <- function(input, output, session, data, run) {
   # or by filtering the data by PARAMCD, then using AVAL or CHG for the yaxis
   p <- reactive({
     req(run(), data(), input$yvar, input$time)
-    app_spaghettiplot(data(), input$yvar, input$time, input$value)
+    app_spaghettiplot(data(), input$yvar, input$time, input$value, input$color, input$facet)
   })
   
   # return the plot object to parent module
